@@ -1,0 +1,65 @@
+{
+  "name": "ephery",
+  "version": "0.0.1",
+  "description": "Dead simple, in-memory, client-side, fake API service.",
+  "main": "dist/index.js",
+  "author": "Dylan Slack <dylanslack@gmail.com> (http://www.dylanslack.me)",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run clean && mkdirp dist && babel lib --out-dir dist",
+    "clean": "rimraf dist coverage",
+    "cover": "nyc ava && nyc report --reporter=html && open -a \"Google Chrome\" coverage/index.html",
+    "prepublish": "npm run build",
+    "test": "npm run test:lint && npm run test:lib",
+    "test:lint": "eslint lib test",
+    "test:lib": "nyc ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dylnslck/ephery.git"
+  },
+  "keywords": [
+    "memory",
+    "api",
+    "service",
+    "fake"
+  ],
+  "bugs": {
+    "url": "https://github.com/dylnslck/ephery/issues"
+  },
+  "homepage": "https://github.com/dylnslck/ephery#readme",
+  "dependencies": {
+    "lodash": "^4.13.1",
+    "node-uuid": "^1.4.7"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.10.4",
+    "babel-eslint": "^6.1.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.9.0",
+    "eslint": "^3.0.0",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.10.2",
+    "eslint-plugin-jsx-a11y": "^1.5.3",
+    "eslint-plugin-react": "^5.2.2",
+    "mkdirp": "^0.5.1",
+    "nyc": "^6.6.1",
+    "rimraf": "^2.5.3"
+  },
+  "ava": {
+    "files": [
+      "test/index.js"
+    ],
+    "source": [
+      "lib/**/*.{js}",
+      "!build/**/*"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "babel": "inherit"
+  }
+}
