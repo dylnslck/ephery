@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Dead simple, in-memory, client-side, fake API service.",
   "main": "dist/index.js",
-  "author": "Dylan Slack <dylanslack@gmail.com> (http://www.dylanslack.me)",
+  "author": "Dylan Slack <dylanslack@gmail.com> (http://www.dylanslack.com)",
   "license": "MIT",
   "scripts": {
     "build": "npm run clean && mkdirp dist && babel lib --out-dir dist",
@@ -12,7 +12,7 @@
     "prepublish": "npm run build",
     "test": "npm run test:lint && npm run test:lib",
     "test:lint": "eslint lib test",
-    "test:lib": "nyc ava"
+    "test:lib": "nyc ava && nyc report --reporter=lcov"
   },
   "repository": {
     "type": "git",
