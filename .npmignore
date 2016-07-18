@@ -1,0 +1,8 @@
+test
+example
+.babelrc
+.eslintrc
+.circle.yml
+.codecov.yml
+node_modules
+.nyc_output
