@@ -192,4 +192,16 @@ test('authSignup and authToken', async t => {
 
   const token = await db.authToken(email, password);
   t.is(token, `${user.id}-token`);
+
+  try {
+    await db.authSignup({
+      name: 'Jimmy',
+      email,
+      password,
+    });
+
+    t.fail();
+  } catch (e) {
+    t.is(e.message, 'This email address is already taken.');
+  }
 });
