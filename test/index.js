@@ -165,3 +165,31 @@ test('create, fetch, update, find with relationships', async t => {
 
   t.deepEqual(expected, actual, 'fetched object has correct json');
 });
+
+test('authSignup and authToken', async t => {
+  const email = 'auth@gmail.com';
+  const password = 'secret';
+
+  const user = await db.authSignup({
+    name: 'Jimmy',
+    email,
+    password,
+  });
+
+  try {
+    await db.authToken('wrong@gmail.com', password);
+    t.fail();
+  } catch (e) {
+    t.is(e.message, 'Invalid email/password combination.');
+  }
+
+  try {
+    await db.authToken(email, 'wrongpassword');
+    t.fail();
+  } catch (e) {
+    t.is(e.message, 'Invalid email/password combination.');
+  }
+
+  const token = await db.authToken(email, password);
+  t.is(token, `${user.id}-token`);
+});
