@@ -89,6 +89,7 @@ test('should find users', async t => {
     id: '1',
     name: 'John Doe',
     email: 'johndoe@gmail.com',
+    password: '12345-secret',
     blogs: [{
       id: '1',
       title: 'Tabs vs. Spaces',
@@ -166,7 +167,12 @@ test('create, fetch, update, find with relationships', async t => {
   t.deepEqual(expected, actual, 'fetched object has correct json');
 });
 
-test('authSignup and authToken', async t => {
+test('authToken with fixtures', async t => {
+  const token = await db.authToken('johndoe@gmail.com', '12345');
+  t.is(token, '1-token');
+});
+
+test('authSignup with authToken', async t => {
   const email = 'auth@gmail.com';
   const password = 'secret';
 

@@ -3,6 +3,7 @@ export default {
     1: {
       name: 'John Doe',
       email: 'johndoe@gmail.com',
+      password: '12345-secret',
       blogs: ['1'],
       comments: ['1'],
     },
