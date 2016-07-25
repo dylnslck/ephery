@@ -167,9 +167,12 @@ test('create, fetch, update, find with relationships', async t => {
   t.deepEqual(expected, actual, 'fetched object has correct json');
 });
 
-test('authToken with fixtures', async t => {
-  const token = await db.authToken('johndoe@gmail.com', '12345');
-  t.is(token.token, '1-token');
+test('authToken and authVerify with fixtures', async t => {
+  const userAndToken = await db.authToken('johndoe@gmail.com', '12345');
+  t.is(userAndToken.token, '1-token');
+
+  const user = await db.authVerify(userAndToken.token);
+  t.deepEqual(userAndToken.user, user);
 });
 
 test('authSignup with authToken', async t => {
