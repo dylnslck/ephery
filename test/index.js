@@ -173,6 +173,20 @@ test('authToken and authVerify with fixtures', async t => {
 
   const user = await db.authVerify(userAndToken.token);
   t.deepEqual(userAndToken.user, user);
+
+  try {
+    await db.authVerify('invalid-token');
+    t.fail();
+  } catch (e) {
+    t.truthy(e);
+  }
+
+  try {
+    await db.authVerify('1-toke');
+    t.fail();
+  } catch (e) {
+    t.truthy(e);
+  }
 });
 
 test('authSignup with authToken', async t => {
