@@ -164,6 +164,34 @@ api.del('user', '1').then(success => {
 });
 ```
 
+### .authToken(email, password) -> String `async`
+
+```js
+api.authToken('johndoe@gmail.com', 'password').then(token => {
+  // token, useful for storing in localStorage, etc.
+});
+```
+
+### .authSignup(user) -> Object `async`
+
+```js
+api.authSignup({
+  name: 'John Doe',
+  email: 'johndoe@gmail.com',
+  password: 'password',
+}).then(user => {
+  // created user with the password hashed
+});
+```
+
+### .authVerify(token) -> Boolean `async`
+
+```js
+api.authSignup(token).then(success => {
+  // true or false depending if the token is valid
+});
+```
+
 ## React + Redux Example
 [Dan Abramov](https://twitter.com/dan_abramov) has an excellent course on [Egghead.io](https://egghead.io/courses/building-react-applications-with-idiomatic-redux) titled "Idiomatic Redux," where he mocks a [simple API service](https://github.com/gaearon/todos/blob/27-updating-data-on-the-server/src/api/index.js) that is invoked by actions. Ephery can act as that service in applications that have more intensive CRUD requirements. Because Ephery returns deeply-nested JSON objects, responses can be easily normalized and merged with the state tree.
 
