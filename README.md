@@ -187,7 +187,7 @@ api.authSignup({
 ### .authVerify(token) -> Boolean `async`
 
 ```js
-api.authSignup(token).then(success => {
+api.authVerify(token).then(success => {
   // true or false depending if the token is valid
 });
 ```
