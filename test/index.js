@@ -169,7 +169,7 @@ test('create, fetch, update, find with relationships', async t => {
 
 test('authToken with fixtures', async t => {
   const token = await db.authToken('johndoe@gmail.com', '12345');
-  t.deepEqual(token, { id: '1', token: '1-token' });
+  t.is(token.token, '1-token');
 });
 
 test('authSignup with authToken', async t => {
@@ -197,7 +197,7 @@ test('authSignup with authToken', async t => {
   }
 
   const token = await db.authToken(email, password);
-  t.deepEqual(token, { id: user.id, token: `${user.id}-token` });
+  t.deepEqual(token, { user, token: `${user.id}-token` });
 
   try {
     await db.authSignup({
