@@ -164,15 +164,9 @@ api.del('user', '1').then(success => {
 });
 ```
 
-### .authToken(email, password) -> String `async`
-
-```js
-api.authToken('johndoe@gmail.com', 'password').then(token => {
-  // token, useful for storing in localStorage, etc.
-});
-```
-
 ### .authSignup(user) -> Object `async`
+
+This method simply creates a user and "hashes" the password. The password isn't actually hashed, but it simulates how it would happen on the server. Internally, the password is appended with "-secret", so that you can simulate users in fixtures by
 
 ```js
 api.authSignup({
@@ -180,15 +174,40 @@ api.authSignup({
   email: 'johndoe@gmail.com',
   password: 'password',
 }).then(user => {
-  // created user with the password hashed
+  // created user with the password "hashed"
 });
 ```
 
-### .authVerify(token) -> Boolean `async`
+### .authToken(email, password) -> Object `async`
+
+This method exchanges an email/password combination for a token that can be stored (i.e. in localStorage).
 
 ```js
-api.authVerify(token).then(success => {
-  // true or false depending if the token is valid
+api.authToken('johndoe@gmail.com', 'password').then(response => {
+  /*
+  {
+    token: 'f96776b7-19d1-44d8-8f78-f4c708b53c8a-token',
+    user: {
+      id: 'f96776b7-19d1-44d8-8f78-f4c708b53c8a',
+      name: 'John Doe',
+      email: 'johndoe@gmail.com',
+    },
+  }
+  */
+}).catch(err => {
+  // invalid email/password combination
+});
+```
+
+### .authVerify(token) -> Object `async`
+
+This method verifies that a token is valid. Internally, a token looks like "${id}-token", so that you can easily simulate tokens.
+
+```js
+api.authVerify(token).then(user => {
+  // returns the user corresponding to the token
+}).catch(err => {
+  // token is invalid
 });
 ```
 
