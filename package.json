@@ -1,6 +1,6 @@
 {
   "name": "ephery",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Dead simple, in-memory, client-side, fake API service.",
   "main": "dist/index.js",
   "author": "Dylan Slack <dylanslack@gmail.com> (http://www.dylanslack.com)",
