@@ -1,8 +1,9 @@
 # Ephery
 [![CircleCI](https://circleci.com/gh/dylnslck/ephery.svg?style=svg)](https://circleci.com/gh/dylnslck/ephery)
+[![codecov](https://codecov.io/gh/dylnslck/ephery/branch/master/graph/badge.svg)](https://codecov.io/gh/dylnslck/ephery)
 [![npm version](https://badge.fury.io/js/ephery.svg)](https://badge.fury.io/js/ephery)
 
-Ephery is a dead simple, in-memory, client-side, fake API service. This tool is useful for prototyping client-side applications without hijacking Ajax. In particular, this tool was built to interact with React  + Redux applications that rely on an API service, but Ephery can be useful for any framework that isn't too opinionated on data-fetching.
+Ephery is a dead simple, in-memory, client-side, fake API service. This tool is useful for prototyping client-side applications without hijacking Ajax. In particular, this tool was built to interact with React + Redux applications that rely on an API service, but Ephery can be useful for any framework that isn't too opinionated on data-fetching.
 
 ## Getting started
 ```
@@ -166,7 +167,7 @@ api.del('user', '1').then(user => {
 
 ### .authSignup(user) -> Object `async`
 
-This method simply creates a user and "hashes" the password. The password isn't actually hashed, but it simulates how it would happen on the server. Internally, the password is appended with "-secret", so that you can simulate users in fixtures by
+This method simply creates a user and "hashes" the password. The password isn't actually hashed, but it simulates how it would happen on the server. Internally, the password is appended with "-secret", so that you can simulate users in fixtures by creating a user with the password field being "<something>-secret".
 
 ```js
 api.authSignup({
