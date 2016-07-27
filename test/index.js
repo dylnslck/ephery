@@ -120,7 +120,7 @@ test('should update then delete first user', async t => {
   const deleted = await db.del('user', found[0].id);
 
   t.deepEqual(updated, expected, 'updated object has correct json');
-  t.is(deleted, true, 'object was correctly deleted');
+  t.deepEqual(deleted, expected, 'object was correctly deleted');
   t.falsy(db.database[found[0].id], 'correctly spliced from database');
 });
 

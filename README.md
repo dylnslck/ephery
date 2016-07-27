@@ -124,7 +124,7 @@ api.create('user', {
   name: 'Dylan',
   email: 'dylan@gmail.com',
 }).then(user => {
-
+  // created user
 });
 ```
 
@@ -132,7 +132,7 @@ api.create('user', {
 
 ```js
 api.fetch('user', '1').then(user => {
-
+  // single user
 });
 ```
 
@@ -142,7 +142,7 @@ api.fetch('user', '1').then(user => {
 api.find('user', {
   name: 'Dylan',
 }).then(users => {
-
+  // all users
 });
 ```
 
@@ -152,15 +152,15 @@ api.find('user', {
 api.update('user', '1', {
   name: 'Bob',
 }).then(user => {
-
+  // updated user
 });
 ```
 
-### .del(type, id) -> Boolean `async`
+### .del(type, id) -> Object `async`
 
 ```js
-api.del('user', '1').then(success => {
-  // true or false
+api.del('user', '1').then(user => {
+  // deleted user
 });
 ```
 
