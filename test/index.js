@@ -16,7 +16,7 @@ test('creating an invalid type should throw an error', async t => {
   const type = 'invalid';
 
   try {
-    await db.create(type);
+    await db.create('1-token', type);
   } catch (e) {
     t.truthy(e, 'the error is a valid object');
     t.is(e.message, `There is no schema with type '${type}'.`);
@@ -27,7 +27,7 @@ test('fetching an invalid type should throw an error', async t => {
   const type = 'invalid';
 
   try {
-    await db.fetch(type, '1');
+    await db.fetch('1-token', type, '1');
   } catch (e) {
     t.truthy(e, 'the error is a valid object');
     t.is(e.message, `There is no schema with type '${type}'.`);
@@ -38,7 +38,7 @@ test('finding an invalid type should throw an error', async t => {
   const type = 'invalid';
 
   try {
-    await db.find(type, { name: 'John Doe' });
+    await db.find('1-token', type, { name: 'John Doe' });
   } catch (e) {
     t.truthy(e, 'the error is a valid object');
     t.is(e.message, `There is no schema with type '${type}'.`);
@@ -49,7 +49,7 @@ test('updating an invalid type should throw an error', async t => {
   const type = 'invalid';
 
   try {
-    await db.update(type, '1', { name: 'Johnny Doe' });
+    await db.update('1-token', type, '1', { name: 'Johnny Doe' });
   } catch (e) {
     t.truthy(e, 'the error is a valid object');
     t.is(e.message, `There is no schema with type '${type}'.`);
@@ -60,7 +60,7 @@ test('deleting an invalid type should throw an error', async t => {
   const type = 'invalid';
 
   try {
-    await db.del(type, '1');
+    await db.archive('1-token', type, '1');
   } catch (e) {
     t.truthy(e, 'the error is a valid object');
     t.is(e.message, `There is no schema with type '${type}'.`);
@@ -68,8 +68,12 @@ test('deleting an invalid type should throw an error', async t => {
 });
 
 test('should create and fetch a user', async t => {
-  const created = await db.create('user', { name: 'Dylan', email: 'dylanslack@gmail.com' });
-  const fetched = await db.fetch('user', created.id);
+  const created = await db.create(
+    '1-token',
+    'user',
+    { name: 'Dylan', email: 'dylanslack@gmail.com' }
+  );
+  const fetched = await db.fetch(`${created.id}-token`, 'user', created.id);
 
   const expected = {
     id: created.id,
@@ -82,8 +86,8 @@ test('should create and fetch a user', async t => {
 });
 
 test('should find users', async t => {
-  const filtered = await db.find('user', { email: 'johndoe@gmail.com' });
-  const notFound = await db.find('user', { email: 'invalid@email.com' });
+  const filtered = await db.find('1-token', 'user', { email: 'johndoe@gmail.com' });
+  const notFound = await db.find('1-token', 'user', { email: 'invalid@email.com' });
 
   const expected = [{
     id: '1',
@@ -109,15 +113,15 @@ test('should find users', async t => {
 });
 
 test('should update then delete first user', async t => {
-  const found = await db.find('user');
-  const updated = await db.update('user', found[0].id, { name: 'Dy-lon' });
+  const found = await db.find('1-token', 'user');
+  const updated = await db.update('1-token', 'user', found[0].id, { name: 'Dy-lon' });
 
   const expected = {
     ...found[0],
     name: 'Dy-lon',
   };
 
-  const deleted = await db.del('user', found[0].id);
+  const deleted = await db.archive(`${found[0].id}-token`, 'user', found[0].id);
 
   t.deepEqual(updated, expected, 'updated object has correct json');
   t.deepEqual(deleted, expected, 'object was correctly deleted');
@@ -125,26 +129,30 @@ test('should update then delete first user', async t => {
 });
 
 test('create, fetch, update, find with relationships', async t => {
-  const user = await db.create('user', { name: 'Bob Jones', email: 'bobjones@gmail.com' });
-  const blog = await db.create('blog', { title: 'The Future of AI' });
-  const comment = await db.create('comment', { text: 'Awesome!' });
+  const user = await db.create(
+    '1-token',
+    'user',
+    { name: 'Bob Jones', email: 'bobjones@gmail.com' }
+  );
+  const blog = await db.create('1-token', 'blog', { title: 'The Future of AI' });
+  const comment = await db.create('1-token', 'comment', { text: 'Awesome!' });
 
-  await db.update('user', user.id, {
+  await db.update('1-token', 'user', user.id, {
     blogs: [blog.id],
     comments: [comment.id],
   });
 
-  await db.update('blog', blog.id, {
+  await db.update('1-token', 'blog', blog.id, {
     author: user.id,
     comments: [comment.id],
   });
 
-  await db.update('comment', comment.id, {
+  await db.update('1-token', 'comment', comment.id, {
     user: user.id,
     blog: blog.id,
   });
 
-  const actual = await db.fetch('user', user.id);
+  const actual = await db.fetch('1-token', 'user', user.id);
 
   const expected = {
     id: user.id,
@@ -168,21 +176,25 @@ test('create, fetch, update, find with relationships', async t => {
 });
 
 test('authToken and authVerify with fixtures', async t => {
-  const userAndToken = await db.authToken('johndoe@gmail.com', '12345');
+  const userAndToken = await db.auth(
+    'token',
+    'user',
+    { email: 'johndoe@gmail.com', password: '12345' }
+  );
   t.is(userAndToken.token, '1-token');
 
-  const user = await db.authVerify(userAndToken.token);
-  t.deepEqual(userAndToken.user, user);
+  const user = await db.verify(userAndToken.token);
+  t.truthy(user.verified);
 
   try {
-    await db.authVerify('invalid-token');
+    await db.verify('invalid-token');
     t.fail();
   } catch (e) {
     t.truthy(e);
   }
 
   try {
-    await db.authVerify('1-toke');
+    await db.verify('1-toke');
     t.fail();
   } catch (e) {
     t.truthy(e);
@@ -193,31 +205,31 @@ test('authSignup with authToken', async t => {
   const email = 'auth@gmail.com';
   const password = 'secret';
 
-  const user = await db.authSignup({
+  const user = await db.auth('signup', 'user', {
     name: 'Jimmy',
     email,
     password,
   });
 
   try {
-    await db.authToken('wrong@gmail.com', password);
+    await db.auth('token', 'user', { email: 'wrong@gmail.com', password });
     t.fail();
   } catch (e) {
     t.is(e.message, 'Invalid email/password combination.');
   }
 
   try {
-    await db.authToken(email, 'wrongpassword');
+    await db.auth('token', 'user', { email, password: 'wrong' });
     t.fail();
   } catch (e) {
     t.is(e.message, 'Invalid email/password combination.');
   }
 
-  const token = await db.authToken(email, password);
-  t.deepEqual(token, { user, token: `${user.id}-token` });
+  const token = await db.auth('token', 'user', { email, password });
+  t.deepEqual(token, { user: user.user, token: `${user.user.id}-token` });
 
   try {
-    await db.authSignup({
+    await db.auth('signup', 'user', {
       name: 'Jimmy',
       email,
       password,
