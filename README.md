@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/dylnslck/ephery/branch/master/graph/badge.svg)](https://codecov.io/gh/dylnslck/ephery)
 [![npm version](https://badge.fury.io/js/ephery.svg)](https://badge.fury.io/js/ephery)
 
-Ephery is a dead simple, in-memory, client-side, fake API service. This tool is useful for prototyping client-side applications without hijacking Ajax. In particular, this tool was built to interact with React + Redux applications that rely on an API service, but Ephery can be useful for any framework that isn't too opinionated on data-fetching.
+Ephery is a dead simple, in-memory, client-side, fake API service that mirrors [redink-sdk](https://github.com/endfire/redink-sdk). This tool is useful for prototyping client-side applications without hijacking Ajax. In particular, this tool was built to interact with React + Redux applications that rely on an API service, but Ephery can be useful for any framework that isn't too opinionated on data-fetching.
 
 ## Getting started
 ```
@@ -86,15 +86,21 @@ const fixtures = {
   },
 };
 
-export default new Store(schemas, fixtures);
+// Entity you want to use for authenticating
+// Default is 'user'
+const entity = 'user';
+
+export default new Store(schemas, fixtures, entity);
 ```
 
 Then somewhere in your application, you can invoke Ephery. All returned data is deeply nested JSON.
+`authToken` is used to authorize api calls, Ephery expects `${user.id}-token` as a token.
 
 ```js
 import api from '../services/store';
+const authToken = localStorage.token;
 
-api.fetch('user', '1').then(user => {
+api.fetch(authToken, 'user', '1').then(user => {
   /*
   {
     name: 'John Doe',
@@ -118,10 +124,10 @@ api.fetch('user', '1').then(user => {
 
 ## API
 
-### .create(type, record) -> Object `async`
+### .create(authToken, type, record) -> Object `async`
 
 ```js
-api.create('user', {
+api.create(authToken, 'user', {
   name: 'Dylan',
   email: 'dylan@gmail.com',
 }).then(user => {
@@ -129,48 +135,48 @@ api.create('user', {
 });
 ```
 
-### .fetch(type, id) -> Object `async`
+### .fetch(authToken, type, id) -> Object `async`
 
 ```js
-api.fetch('user', '1').then(user => {
+api.fetch(authToken, 'user', '1').then(user => {
   // single user
 });
 ```
 
-### .find(type, filters = {}) -> Object[] `async`
+### .find(authToken, type, filters = {}) -> Object[] `async`
 
 ```js
-api.find('user', {
+api.find(authToken, 'user', {
   name: 'Dylan',
 }).then(users => {
   // all users
 });
 ```
 
-### .update(type, id, data) -> Object `async`
+### .update(authToken, type, id, data) -> Object `async`
 
 ```js
-api.update('user', '1', {
+api.update(authToken, 'user', '1', {
   name: 'Bob',
 }).then(user => {
   // updated user
 });
 ```
 
-### .del(type, id) -> Object `async`
+### .archive(authToken, type, id) -> Object `async`
 
 ```js
-api.del('user', '1').then(user => {
+api.archive(authToken, 'user', '1').then(user => {
   // deleted user
 });
 ```
 
-### .authSignup(user) -> Object `async`
+### .auth('signup', entity, data) -> Object `async`
 
 This method simply creates a user and "hashes" the password. The password isn't actually hashed, but it simulates how it would happen on the server. Internally, the password is appended with "-secret", so that you can simulate users in fixtures by creating a user with the password field being "<something>-secret".
 
 ```js
-api.authSignup({
+api.auth('signup', 'user', {
   name: 'John Doe',
   email: 'johndoe@gmail.com',
   password: 'password',
@@ -179,12 +185,15 @@ api.authSignup({
 });
 ```
 
-### .authToken(email, password) -> Object `async`
+### .auth('token', entity, data) -> Object `async`
 
 This method exchanges an email/password combination for a token that can be stored (i.e. in localStorage).
 
 ```js
-api.authToken('johndoe@gmail.com', 'password').then(response => {
+api.auth('token', 'user', {
+  email: 'johndoe@gmail.com',
+  password: 'password',
+}).then(response => {
   /*
   {
     token: 'f96776b7-19d1-44d8-8f78-f4c708b53c8a-token',
@@ -200,16 +209,18 @@ api.authToken('johndoe@gmail.com', 'password').then(response => {
 });
 ```
 
-### .authVerify(token) -> Object `async`
+### .verify(token) -> Object `async`
 
 This method verifies that a token is valid. Internally, a token looks like "${id}-token", so that you can easily simulate tokens.
 
 ```js
-api.authVerify(token).then(user => {
-  // returns the user corresponding to the token
-}).catch(err => {
-  // token is invalid
-});
+api.verify(token).then(response => {
+  /*
+  {
+    verified: boolean,
+  }
+  */
+})
 ```
 
 ## React + Redux Example
