@@ -30,7 +30,7 @@
   "homepage": "https://github.com/dylnslck/ephery#readme",
   "dependencies": {
     "lodash": "^4.13.1",
-    "node-uuid": "^1.4.7"
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "ava": "^0.15.2",
